@@ -46,7 +46,8 @@ namespace FileManager
             this.DeleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.RenameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.CausalityToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.CopyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.PasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.listView1 = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -56,8 +57,8 @@ namespace FileManager
             this.label1 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
-            this.复制ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.粘贴ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.RestoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -67,6 +68,7 @@ namespace FileManager
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ReturnToolStripMenuItem,
+            this.RestoreToolStripMenuItem,
             this.FormatToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -78,8 +80,15 @@ namespace FileManager
             // 
             this.ReturnToolStripMenuItem.Name = "ReturnToolStripMenuItem";
             this.ReturnToolStripMenuItem.Size = new System.Drawing.Size(38, 24);
-            this.ReturnToolStripMenuItem.Text = "⬅️";
+            this.ReturnToolStripMenuItem.Text = "←";
             this.ReturnToolStripMenuItem.Click += new System.EventHandler(this.ReturnToolStripMenuItemClick);
+            // 
+            // RestoreToolStripMenuItem
+            // 
+            this.RestoreToolStripMenuItem.Name = "RestoreToolStripMenuItem";
+            this.RestoreToolStripMenuItem.Size = new System.Drawing.Size(38, 24);
+            this.RestoreToolStripMenuItem.Text = "→";
+            this.RestoreToolStripMenuItem.Click += new System.EventHandler(this.RestoreToolStripMenuItemClick);
             // 
             // FormatToolStripMenuItem
             // 
@@ -98,8 +107,8 @@ namespace FileManager
             this.DeleteToolStripMenuItem,
             this.RenameToolStripMenuItem,
             this.CausalityToolStripMenuItem,
-            this.复制ToolStripMenuItem,
-            this.粘贴ToolStripMenuItem});
+            this.CopyToolStripMenuItem,
+            this.PasteToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip3";
             this.contextMenuStrip1.Size = new System.Drawing.Size(124, 196);
             // 
@@ -161,27 +170,19 @@ namespace FileManager
             this.CausalityToolStripMenuItem.Text = "属性";
             this.CausalityToolStripMenuItem.Click += new System.EventHandler(this.CausalityToolStripMenuItemClick);
             // 
-            // 复制ToolStripMenuItem
+            // CopyToolStripMenuItem
             // 
-            this.复制ToolStripMenuItem.Name = "复制ToolStripMenuItem";
-            this.复制ToolStripMenuItem.Size = new System.Drawing.Size(123, 24);
-            this.复制ToolStripMenuItem.Text = "复制";
+            this.CopyToolStripMenuItem.Name = "CopyToolStripMenuItem";
+            this.CopyToolStripMenuItem.Size = new System.Drawing.Size(123, 24);
+            this.CopyToolStripMenuItem.Text = "复制";
+            this.CopyToolStripMenuItem.Click += new System.EventHandler(this.CopyToolStripMenuItemClick);
             // 
-            // 粘贴ToolStripMenuItem
+            // PasteToolStripMenuItem
             // 
-            this.粘贴ToolStripMenuItem.Name = "粘贴ToolStripMenuItem";
-            this.粘贴ToolStripMenuItem.Size = new System.Drawing.Size(123, 24);
-            this.粘贴ToolStripMenuItem.Text = "粘贴";
-            // 
-            // treeView1
-            // 
-            this.treeView1.ImageIndex = 1;
-            this.treeView1.ImageList = this.imageList1;
-            this.treeView1.Location = new System.Drawing.Point(12, 61);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.SelectedImageIndex = 1;
-            this.treeView1.Size = new System.Drawing.Size(205, 368);
-            this.treeView1.TabIndex = 1;
+            this.PasteToolStripMenuItem.Name = "PasteToolStripMenuItem";
+            this.PasteToolStripMenuItem.Size = new System.Drawing.Size(123, 24);
+            this.PasteToolStripMenuItem.Text = "粘贴";
+            this.PasteToolStripMenuItem.Click += new System.EventHandler(this.PasteToolStripMenuItemClick);
             // 
             // imageList1
             // 
@@ -230,13 +231,14 @@ namespace FileManager
             // 
             // label1
             // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label1.Location = new System.Drawing.Point(49, 33);
+            this.label1.Location = new System.Drawing.Point(50, 33);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(96, 15);
+            this.label1.Size = new System.Drawing.Size(82, 15);
             this.label1.TabIndex = 3;
             this.label1.Text = "当前路径：";
+            this.label1.UseMnemonic = false;
             // 
             // textBox1
             // 
@@ -252,6 +254,16 @@ namespace FileManager
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(822, 18);
             this.textBox2.TabIndex = 5;
+            // 
+            // treeView1
+            // 
+            this.treeView1.ImageIndex = 1;
+            this.treeView1.ImageList = this.imageList1;
+            this.treeView1.Location = new System.Drawing.Point(12, 61);
+            this.treeView1.Name = "treeView1";
+            this.treeView1.SelectedImageIndex = 1;
+            this.treeView1.Size = new System.Drawing.Size(205, 368);
+            this.treeView1.TabIndex = 1;
             // 
             // FileManager
             // 
@@ -284,7 +296,6 @@ namespace FileManager
         private ContextMenuStrip contextMenuStrip1;
         private ToolStripMenuItem DeleteToolStripMenuItem;
         private ToolStripMenuItem RenameToolStripMenuItem;
-        private TreeView treeView1;
         private ToolStripMenuItem FormatToolStripMenuItem;
         private ListView listView1;
         private ImageList imageList1;
@@ -302,7 +313,9 @@ namespace FileManager
         private TextBox textBox2;
         private ToolStripMenuItem CausalityToolStripMenuItem;
         private ToolStripMenuItem RefreshToolStripMenuItem;
-        private ToolStripMenuItem 复制ToolStripMenuItem;
-        private ToolStripMenuItem 粘贴ToolStripMenuItem;
+        private ToolStripMenuItem CopyToolStripMenuItem;
+        private ToolStripMenuItem PasteToolStripMenuItem;
+        private TreeView treeView1;
+        private ToolStripMenuItem RestoreToolStripMenuItem;
     }
 }

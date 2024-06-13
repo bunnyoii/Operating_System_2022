@@ -278,14 +278,33 @@ namespace FileManager
             return name;
         }
 
-        //返回按钮
+        //撤销按钮
+        private Stack<Catalog> _historyStack = new Stack<Catalog>();
         private void ReturnToolStripMenuItemClick(object sender, EventArgs e)
         {
             if (_curCatalog == _rootCatalog) return;
+            _historyStack.Push(_curCatalog); // 将当前目录压入栈中
             _curCatalog = _curCatalog.parenCatalog;
             UpdateView();
         }
-
+        
+        //还原按钮
+        private void RestoreToolStripMenuItemClick(object sender, EventArgs e)
+        {
+            // 检查历史栈是否为空
+            if (_historyStack.Count > 0)
+            {
+                // 从栈中弹出目录，并设置为当前目录
+                _curCatalog = _historyStack.Pop();
+                // 更新视图
+                UpdateView();
+            }
+            else
+            {
+                MessageBox.Show(@"没有可以恢复的历史目录。");
+            }
+        }
+        
         //打开按钮
         private void OpenToolStripMenuItemClick(object sender, EventArgs e)
         {
@@ -396,6 +415,102 @@ namespace FileManager
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        // 定义一个变量来存储被复制的节点信息
+        private Node _copiedNode = null;
+
+        private void CopyToolStripMenuItemClick(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0)
+            {
+                MessageBox.Show(@"请选择一个文件或文件夹进行复制。");
+                return; // 如果没有选中任何项，则不执行任何操作
+            }
+
+            // 获取选中的第一个项目
+            var item = listView1.SelectedItems[0];
+
+            // 遍历当前目录的节点列表，找到与选中项目匹配的节点
+            for (var i = 0; i < _curCatalog.nodelist.Count; i++)
+            {
+                if (_listViewItems[i] == item)
+                {
+                    _copiedNode = _curCatalog.nodelist[i]; // 存储被复制的节点
+                    MessageBox.Show(@"已复制: " + _copiedNode.name); // 提示用户已复制
+                    return;
+                }
+            }
+
+            MessageBox.Show(@"复制失败，请重新选择文件或文件夹。"); // 复制失败的提示
+        }
+
+        private void PasteToolStripMenuItemClick(object sender, EventArgs e)
+        {
+            if (_copiedNode == null)
+            {
+                MessageBox.Show(@"没有复制的文件或文件夹，请先复制。");
+                return; // 如果没有复制的节点，则不执行任何操作
+            }
+
+            // 检查是否有重名的文件或文件夹
+            var newName = nameCheck(_copiedNode.name, _copiedNode.nodeType == Node.NodeType.file ? "txt" : "");
+    
+            // 创建节点的副本并添加到当前目录
+            Node newNode;
+            if (_copiedNode.nodeType == Node.NodeType.file)
+            {
+                newNode = new Node(newName, "txt", _curCatalog.path)
+                {
+                    file = new File(newName, "txt", _curCatalog.path)
+                    {
+                        // 如果需要，复制文件内容
+                        blocklist = new List<Block>(_copiedNode.file.blocklist), // 浅复制，需要深复制可进一步处理
+                        size = _copiedNode.file.size
+                    }
+                };
+            }
+            else
+            {
+                newNode = new Node(newName, _curCatalog.path);
+                // 递归复制所有子目录和文件
+                CopyDirectory(_copiedNode.folder, newNode.folder);
+            }
+
+            _curCatalog.nodelist.Add(newNode);
+            _curCatalog.childrenNum++;
+            _curCatalog.updatedTime = DateTime.Now;
+
+            UpdateView();  // 更新视图
+            MessageBox.Show(@"粘贴成功");
+        }
+
+        // 递归复制目录
+        private void CopyDirectory(Catalog source, Catalog destination)
+        {
+            foreach (var node in source.nodelist)
+            {
+                Node newNode;
+                if (node.nodeType == Node.NodeType.file)
+                {
+                    newNode = new Node(node.name, "txt", destination.path)
+                    {
+                        file = new File(node.name, "txt", destination.path)
+                        {
+                            blocklist = new List<Block>(node.file.blocklist), // 浅复制，需要深复制可进一步处理
+                            size = node.file.size
+                        }
+                    };
+                }
+                else
+                {
+                    newNode = new Node(node.name, destination.path);
+                    CopyDirectory(node.folder, newNode.folder);
+                }
+                destination.nodelist.Add(newNode);
+                destination.childrenNum++;
+            }
+            destination.updatedTime = DateTime.Now;
         }
 
         private void FormatToolStripMenuItemClick(object sender, EventArgs e)
